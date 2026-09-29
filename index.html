@@ -1,0 +1,1861 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سینه‌شاپ | فروشگاه فیلم</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazirmatn', sans-serif; }
+
+:root {
+  --primary: #e50914;
+  --primary-dark: #b20710;
+  --gold: #f5c518;
+  --bg: #0a0a0a;
+  --card: #141414;
+  --border: #262626;
+  --text: #ffffff;
+  --text-dim: #a3a3a3;
+  --admin-bg: #0f172a;
+  --admin-sidebar: #1e293b;
+  --admin-accent: #3b82f6;
+}
+
+body { background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+a { color: inherit; text-decoration: none; cursor: pointer; }
+button { cursor: pointer; border: none; font-family: inherit; }
+img { max-width: 100%; display: block; }
+input, select, textarea { font-family: inherit; }
+.container { max-width: 1280px; margin: 0 auto; padding: 0 16px; }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #0a0a0a; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+/* Loading */
+#loadingOverlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 99999;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+}
+#loadingOverlay.hidden { display: none; }
+.loader { width: 50px; height: 50px; border: 4px solid rgba(229,9,20,0.2); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+#loadingOverlay p { color: var(--text-dim); font-size: 14px; }
+
+#syncStatus {
+  position: fixed; bottom: 20px; left: 20px; background: rgba(0,0,0,0.9);
+  border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px;
+  font-size: 11px; color: var(--text-dim); z-index: 999;
+  display: flex; align-items: center; gap: 8px;
+}
+#syncStatus .dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
+#syncStatus.syncing .dot { background: #f59e0b; animation: pulse 1s infinite; }
+#syncStatus.error .dot { background: #ef4444; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* Navbar */
+.navbar { position: sticky; top: 0; z-index: 100; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+.navbar-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 16px; }
+.logo { display: flex; align-items: center; gap: 8px; color: var(--primary); font-weight: 700; font-size: 20px; }
+.logo i { font-size: 24px; }
+.nav-links { display: flex; gap: 20px; font-size: 14px; color: var(--text-dim); }
+.nav-links a:hover { color: var(--primary); transition: 0.3s; }
+.nav-actions { display: flex; align-items: center; gap: 8px; }
+.icon-btn { width: 40px; height: 40px; border-radius: 8px; background: transparent; color: var(--text); display: flex; align-items: center; justify-content: center; position: relative; transition: 0.3s; }
+.icon-btn:hover { background: rgba(255,255,255,0.1); }
+.cart-count { position: absolute; top: -4px; left: -4px; background: var(--primary); color: white; font-size: 10px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.search-box { display: flex; align-items: center; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; padding: 0 12px; height: 40px; width: 280px; }
+.search-box input { background: transparent; border: none; color: white; width: 100%; height: 100%; padding: 0 8px; font-size: 14px; outline: none; }
+.search-box i { color: var(--text-dim); font-size: 14px; }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; transition: 0.3s; white-space: nowrap; }
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; }
+.btn-outline:hover { background: rgba(255,255,255,0.1); }
+.btn-ghost { background: transparent; color: white; }
+.btn-ghost:hover { background: rgba(255,255,255,0.1); }
+.btn-lg { padding: 14px 28px; font-size: 16px; }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-block { width: 100%; }
+.btn-icon { width: 36px; height: 36px; padding: 0; border-radius: 8px; background: var(--primary); color: white; display: inline-flex; align-items: center; justify-content: center; }
+
+/* Hero */
+.hero { position: relative; height: 70vh; min-height: 500px; overflow: hidden; background: linear-gradient(135deg, #1a0000, #0a0a0a); }
+.hero-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding: 20px; }
+.hero-empty i { font-size: 80px; color: rgba(229,9,20,0.2); margin-bottom: 20px; }
+.hero-empty h1 { font-size: 32px; margin-bottom: 12px; }
+.hero-empty p { color: var(--text-dim); margin-bottom: 24px; max-width: 500px; line-height: 1.8; }
+
+/* Section */
+.section { padding: 40px 0; }
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.section-title { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.section-title::before { content: ''; width: 4px; height: 24px; background: var(--primary); border-radius: 2px; }
+
+/* Genres */
+.genres-list { display: flex; flex-wrap: wrap; gap: 10px; }
+.genre-chip { padding: 8px 18px; border-radius: 999px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); font-size: 14px; transition: 0.3s; cursor: pointer; }
+.genre-chip:hover { background: var(--primary); border-color: var(--primary); color: white; }
+
+/* Movies */
+.movies-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+.movie-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: 0.3s; cursor: pointer; }
+.movie-card:hover { transform: translateY(-6px); border-color: rgba(229,9,20,0.5); box-shadow: 0 10px 30px rgba(229,9,20,0.15); }
+.movie-poster { position: relative; aspect-ratio: 2/3; overflow: hidden; background: #1a1a1a; display: flex; align-items: center; justify-content: center; }
+.movie-poster img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+.movie-poster .no-poster { color: rgba(255,255,255,0.15); font-size: 40px; }
+.movie-card:hover .movie-poster img { transform: scale(1.05); }
+.movie-discount { position: absolute; top: 8px; right: 8px; background: var(--primary); color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.movie-info { padding: 12px; }
+.movie-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.movie-meta { display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--text-dim); margin-bottom: 10px; }
+.movie-rating { display: flex; align-items: center; gap: 3px; color: var(--gold); }
+.movie-footer { display: flex; align-items: center; justify-content: space-between; }
+.movie-price { font-weight: 700; color: var(--primary); font-size: 14px; }
+.movie-price-old { font-size: 11px; color: var(--text-dim); text-decoration: line-through; margin-left: 4px; }
+
+/* Empty */
+.empty-state { text-align: center; padding: 60px 20px; color: var(--text-dim); }
+.empty-state i { font-size: 64px; color: rgba(255,255,255,0.1); margin-bottom: 20px; display: block; }
+.empty-state h3 { font-size: 20px; margin-bottom: 8px; color: white; font-weight: 700; }
+.empty-state p { font-size: 14px; margin-bottom: 20px; }
+.empty-small { text-align: center; padding: 30px 20px; color: var(--text-dim); font-size: 14px; }
+.empty-small i { font-size: 32px; color: rgba(255,255,255,0.1); margin-bottom: 12px; display: block; }
+
+/* Promo */
+.promo-banner { background: linear-gradient(to left, rgba(229,9,20,0.3), rgba(229,9,20,0.1), transparent); border: 1px solid rgba(229,9,20,0.2); border-radius: 16px; padding: 40px; text-align: center; }
+.promo-banner h3 { font-size: 28px; margin-bottom: 12px; }
+.promo-banner p { color: var(--text-dim); margin-bottom: 20px; }
+.promo-form { display: flex; gap: 10px; max-width: 450px; margin: 0 auto; }
+.promo-form input { flex: 1; height: 44px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 0 16px; font-size: 14px; outline: none; }
+.promo-form input:focus { border-color: var(--primary); }
+
+/* Forms */
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 14px; color: var(--text-dim); margin-bottom: 6px; }
+.form-input, .form-select, .form-textarea { width: 100%; height: 44px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 0 14px; font-size: 14px; outline: none; transition: 0.3s; }
+.form-textarea { height: auto; padding: 12px 14px; min-height: 100px; resize: vertical; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--primary); }
+.form-select option { background: var(--card); color: white; }
+
+/* Modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(4px); }
+.modal-overlay.active { display: flex; }
+.modal { background: var(--card); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; padding: 28px; animation: modalIn 0.3s; }
+.modal-lg { max-width: 800px; }
+@keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+.modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.modal-title { font-size: 20px; font-weight: 700; }
+.modal-close { background: transparent; color: var(--text-dim); font-size: 20px; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+.modal-close:hover { background: rgba(255,255,255,0.1); color: white; }
+
+/* Cart */
+.cart-layout { display: grid; grid-template-columns: 1fr 360px; gap: 24px; padding: 32px 0; }
+.cart-item { display: flex; align-items: center; gap: 16px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+.cart-item-poster { width: 60px; height: 90px; border-radius: 8px; overflow: hidden; flex-shrink: 0; background: #1a1a1a; display: flex; align-items: center; justify-content: center; }
+.cart-item-poster img { width: 100%; height: 100%; object-fit: cover; }
+.cart-item-info { flex: 1; min-width: 0; }
+.cart-item-title { font-weight: 600; margin-bottom: 6px; }
+.cart-item-price { color: var(--primary); font-weight: 700; font-size: 14px; }
+.cart-summary { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; height: fit-content; position: sticky; top: 88px; }
+.cart-summary h3 { margin-bottom: 16px; }
+.cart-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 12px; color: var(--text-dim); }
+.cart-row.total { border-top: 1px solid var(--border); padding-top: 16px; margin-top: 8px; font-weight: 700; color: white; font-size: 16px; }
+.cart-row.total span:last-child { color: var(--primary); font-size: 20px; }
+
+/* Profile */
+.profile-layout { display: grid; grid-template-columns: 240px 1fr; gap: 24px; padding: 32px 0; }
+.profile-sidebar { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; height: fit-content; position: sticky; top: 88px; }
+.profile-user { padding: 12px; border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+.profile-user p:first-child { font-size: 12px; color: var(--text-dim); }
+.profile-user p:last-child { font-weight: 700; margin-top: 4px; }
+.profile-menu a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; font-size: 14px; transition: 0.2s; }
+.profile-menu a:hover, .profile-menu a.active { background: rgba(255,255,255,0.05); color: var(--primary); }
+
+/* Admin */
+.admin-wrapper { display: none; background: var(--admin-bg); min-height: 100vh; }
+.admin-wrapper.active { display: block; }
+.admin-layout { display: flex; min-height: 100vh; }
+.admin-sidebar { width: 260px; background: var(--admin-sidebar); border-left: 1px solid rgba(255,255,255,0.05); position: fixed; right: 0; top: 0; bottom: 0; overflow-y: auto; z-index: 50; }
+.admin-sidebar-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 12px; }
+.admin-sidebar-header .logo-box { width: 36px; height: 36px; border-radius: 10px; background: var(--admin-accent); display: flex; align-items: center; justify-content: center; }
+.admin-sidebar-header h3 { font-size: 14px; font-weight: 700; }
+.admin-sidebar-header p { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+.admin-menu { padding: 12px; }
+.admin-menu a { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 2px; transition: 0.2s; }
+.admin-menu a:hover, .admin-menu a.active { background: var(--admin-accent); color: white; }
+.admin-menu a i { width: 18px; text-align: center; }
+.admin-main { flex: 1; margin-right: 260px; display: flex; flex-direction: column; }
+.admin-header { height: 64px; background: rgba(30,41,59,0.9); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; position: sticky; top: 0; z-index: 40; }
+.admin-header h1 { font-size: 15px; color: var(--text-dim); font-weight: 500; }
+.admin-user { display: flex; align-items: center; gap: 12px; }
+.admin-user-info { text-align: left; }
+.admin-user-info p:first-child { font-size: 13px; font-weight: 600; }
+.admin-user-info p:last-child { font-size: 11px; color: var(--text-dim); }
+.admin-avatar { width: 36px; height: 36px; border-radius: 50%; background: rgba(59,130,246,0.2); border: 1px solid rgba(59,130,246,0.4); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.admin-content { padding: 24px; flex: 1; }
+
+/* Admin Cards */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.stat-card { background: var(--admin-sidebar); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 16px; }
+.stat-icon { width: 48px; height: 48px; border-radius: 10px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--admin-accent); }
+.stat-icon.green { color: #10b981; }
+.stat-icon.yellow { color: #f59e0b; }
+.stat-icon.red { color: #ef4444; }
+.stat-icon.purple { color: #a855f7; }
+.stat-info p:first-child { font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
+.stat-info p:last-child { font-size: 20px; font-weight: 700; }
+.admin-card { background: var(--admin-sidebar); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; overflow: hidden; margin-bottom: 24px; }
+.admin-card-header { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: space-between; }
+.admin-card-header h3 { font-size: 16px; font-weight: 700; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; font-size: 13px; border-collapse: collapse; }
+th, td { text-align: right; padding: 12px 16px; }
+th { color: var(--text-dim); font-weight: 500; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.05); }
+td { border-bottom: 1px solid rgba(255,255,255,0.03); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+.table-poster { width: 40px; height: 56px; border-radius: 6px; overflow: hidden; background: #1a1a1a; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.15); }
+.table-poster img { width: 100%; height: 100%; object-fit: cover; }
+.status-badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; display: inline-block; }
+.status-paid { background: rgba(16,185,129,0.15); color: #10b981; }
+.status-pending { background: rgba(245,158,11,0.15); color: #f59e0b; }
+.status-cancelled { background: rgba(239,68,68,0.15); color: #ef4444; }
+.status-admin { background: rgba(59,130,246,0.15); color: var(--admin-accent); }
+.status-user { background: rgba(168,85,247,0.15); color: #a855f7; }
+
+/* Toast */
+.toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.toast { background: #1f1f1f; color: white; padding: 12px 20px; border-radius: 10px; border: 1px solid var(--border); font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); animation: toastIn 0.3s; pointer-events: auto; min-width: 240px; display: flex; align-items: center; gap: 10px; }
+.toast.success { border-color: rgba(16,185,129,0.4); }
+.toast.error { border-color: rgba(239,68,68,0.4); }
+.toast i { font-size: 16px; }
+.toast.success i { color: #10b981; }
+.toast.error i { color: #ef4444; }
+@keyframes toastIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .nav-links, .search-box { display: none; }
+  .hero-empty h1 { font-size: 24px; }
+  .cart-layout, .profile-layout { grid-template-columns: 1fr; }
+  .admin-sidebar { transform: translateX(100%); transition: 0.3s; }
+  .admin-sidebar.open { transform: translateX(0); }
+  .admin-main { margin-right: 0; }
+  .promo-form { flex-direction: column; }
+  .mobile-menu-btn { display: flex !important; }
+}
+.mobile-menu-btn { display: none; }
+
+.secret-hint { position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.9); border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; font-size: 11px; color: var(--text-dim); opacity: 0; transition: opacity 0.3s; z-index: 999; pointer-events: none; }
+.secret-hint.show { opacity: 1; }
+.secret-hint kbd { background: var(--admin-accent); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; font-family: monospace; }
+</style>
+</head>
+<body>
+
+<!-- Loading -->
+<div id="loadingOverlay">
+  <div class="loader"></div>
+  <p>در حال اتصال به سرور...</p>
+</div>
+
+<!-- Sync Status -->
+<div id="syncStatus">
+  <span class="dot"></span>
+  <span id="syncText">آماده</span>
+</div>
+
+<!-- Toast -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Secret Hint -->
+<div class="secret-hint" id="secretHint">
+  <kbd>Space</kbd> + <kbd>S</kbd> برای ورود به پنل مدیریت
+</div>
+
+<!-- ============ سایت کاربری ============ -->
+<div id="publicApp">
+  <nav class="navbar">
+    <div class="container navbar-inner">
+      <div style="display:flex;align-items:center;gap:24px;">
+        <a class="logo" onclick="showPage('home')">
+          <i class="fas fa-film"></i>
+          سینه‌شاپ
+        </a>
+        <div class="nav-links">
+          <a onclick="showPage('home')">خانه</a>
+          <a onclick="showPage('movies')">فیلم‌ها</a>
+          <a onclick="showPage('genres')">ژانرها</a>
+          <a onclick="showPage('comingSoon')">به‌زودی</a>
+        </div>
+      </div>
+
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="جستجوی فیلم..." id="searchInput" onkeyup="handleSearch(event)">
+      </div>
+
+      <div class="nav-actions">
+        <button class="icon-btn" onclick="showPage('favorites')" title="علاقه‌مندی‌ها">
+          <i class="fas fa-heart"></i>
+        </button>
+        <button class="icon-btn" onclick="showPage('cart')" title="سبد خرید">
+          <i class="fas fa-shopping-cart"></i>
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+        <button class="icon-btn" onclick="showPage('profile')" title="پنل کاربری">
+          <i class="fas fa-user"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main id="publicContent"></main>
+</div>
+
+<!-- ============ پنل ادمین ============ -->
+<div class="admin-wrapper" id="adminApp">
+  <div class="admin-layout">
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="admin-sidebar-header">
+        <div class="logo-box">
+          <i class="fas fa-shield-halved" style="color:white"></i>
+        </div>
+        <div>
+          <h3>پنل مدیریت</h3>
+          <p>سینه‌شاپ</p>
+        </div>
+      </div>
+
+      <nav class="admin-menu">
+        <a onclick="adminPage('dashboard')" data-page="dashboard" class="active">
+          <i class="fas fa-chart-line"></i> داشبورد
+        </a>
+        <a onclick="adminPage('movies')" data-page="movies">
+          <i class="fas fa-film"></i> فیلم‌ها
+        </a>
+        <a onclick="adminPage('genres')" data-page="genres">
+          <i class="fas fa-tags"></i> ژانرها
+        </a>
+        <a onclick="adminPage('users')" data-page="users">
+          <i class="fas fa-users"></i> کاربران
+        </a>
+        <a onclick="adminPage('orders')" data-page="orders">
+          <i class="fas fa-shopping-bag"></i> سفارش‌ها
+        </a>
+        <a onclick="adminPage('discounts')" data-page="discounts">
+          <i class="fas fa-percent"></i> کدهای تخفیف
+        </a>
+        <a onclick="adminPage('reviews')" data-page="reviews">
+          <i class="fas fa-comments"></i> نظرات
+        </a>
+        <a onclick="adminPage('settings')" data-page="settings">
+          <i class="fas fa-cog"></i> تنظیمات
+        </a>
+        <a onclick="closeAdmin()" style="color:#ef4444;margin-top:20px;">
+          <i class="fas fa-arrow-right"></i> بازگشت به سایت
+        </a>
+      </nav>
+    </aside>
+
+    <div class="admin-main">
+      <header class="admin-header">
+        <button class="icon-btn mobile-menu-btn" onclick="toggleAdminSidebar()" style="color:white">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h1>به پنل مدیریت خوش آمدید</h1>
+        <div class="admin-user">
+          <div class="admin-user-info">
+            <p>مدیر سیستم</p>
+            <p>admin@cineshop.ir</p>
+          </div>
+          <div class="admin-avatar">م</div>
+        </div>
+      </header>
+
+      <div class="admin-content" id="adminContent"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================
+   ⚙️ تنظیمات JSONBin - با کلید خودت
+   ============================================ */
+const JSONBIN_BIN_ID = "6abbec50ac6210605a028bcd";
+const JSONBIN_KEY = "$2a$10$W1ZnT/2.GBo9K1TM8h1PtO4iN.kVDMCk1NTmw6OoOu2oEYDXalM4C";
+const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
+
+/* ============================================
+   State
+   ============================================ */
+let state = {
+  page: 'home',
+  movies: [],
+  genres: [],
+  users: [],
+  orders: [],
+  discounts: [],
+  reviews: [],
+  cart: JSON.parse(localStorage.getItem('cine_cart') || '[]'),
+  favorites: JSON.parse(localStorage.getItem('cine_favs') || '[]'),
+  settings: {},
+  currentMovie: null,
+  selectedGenre: null,
+  searchQuery: '',
+};
+
+// سبد خرید و علاقه‌مندی‌ها محلی می‌مونن (هر کاربر مخصوص خودش)
+function saveLocal(key) {
+  if (key === 'cart') localStorage.setItem('cine_cart', JSON.stringify(state.cart));
+  if (key === 'favorites') localStorage.setItem('cine_favs', JSON.stringify(state.favorites));
+}
+
+function updateCartCount() {
+  document.getElementById('cartCount').textContent = state.cart.length;
+}
+
+/* ============================================
+   Sync با JSONBin
+   ============================================ */
+function setSyncStatus(text, cls = '') {
+  const el = document.getElementById('syncStatus');
+  const txt = document.getElementById('syncText');
+  el.className = cls;
+  txt.textContent = text;
+}
+
+async function loadAll() {
+  setSyncStatus('در حال بارگذاری...', 'syncing');
+  try {
+    const res = await fetch(`${JSONBIN_URL}/latest`, {
+      headers: { 'X-Master-Key': JSONBIN_KEY },
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    const remote = data.record || {};
+
+    // اعمال داده‌های سرور
+    state.movies = remote.movies || [];
+    state.genres = remote.genres || [];
+    state.users = remote.users || [];
+    state.orders = remote.orders || [];
+    state.discounts = remote.discounts || [];
+    state.reviews = remote.reviews || [];
+    state.settings = remote.settings || {};
+
+    setSyncStatus('متصل', '');
+    return true;
+  } catch (e) {
+    console.error('Load error:', e);
+    setSyncStatus('خطای اتصال', 'error');
+    toast('خطا در بارگذاری داده‌ها', 'error');
+    return false;
+  }
+}
+
+let saveTimeout = null;
+async function save(key) {
+  // debounce: چند تغییر پشت سر هم یکبار ذخیره می‌شن
+  clearTimeout(saveTimeout);
+  setSyncStatus('در حال ذخیره...', 'syncing');
+
+  saveTimeout = setTimeout(async () => {
+    try {
+      const payload = {
+        movies: state.movies,
+        genres: state.genres,
+        users: state.users,
+        orders: state.orders,
+        discounts: state.discounts,
+        reviews: state.reviews,
+        settings: state.settings,
+      };
+
+      const res = await fetch(JSONBIN_URL, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Master-Key': JSONBIN_KEY,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      setSyncStatus('ذخیره شد', '');
+      setTimeout(() => setSyncStatus('متصل', ''), 1500);
+    } catch (e) {
+      console.error('Save error:', e);
+      setSyncStatus('خطا در ذخیره', 'error');
+      toast('خطا در ذخیره‌سازی', 'error');
+    }
+  }, 400);
+}
+
+/* ============================================
+   Utils
+   ============================================ */
+function formatPrice(n) {
+  return new Intl.NumberFormat('fa-IR').format(n) + ' تومان';
+}
+function finalPrice(price, discount) {
+  return Math.round(price - (price * discount) / 100);
+}
+function getGenre(id) {
+  return state.genres.find(g => g.id === id) || { name: '-' };
+}
+function getMovie(id) {
+  return state.movies.find(m => m.id === id);
+}
+function toast(msg, type = 'success') {
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${msg}`;
+  document.getElementById('toastContainer').appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+function emptyState(icon, title, desc, btnText, btnAction) {
+  return `
+    <div class="empty-state">
+      <i class="fas ${icon}"></i>
+      <h3>${title}</h3>
+      <p>${desc}</p>
+      ${btnText ? `<button class="btn btn-primary" onclick="${btnAction}">${btnText}</button>` : ''}
+    </div>
+  `;
+}
+function escapeHtml(s) {
+  if (s == null) return '';
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+/* ============================================
+   Router
+   ============================================ */
+function showPage(page) {
+  state.page = page;
+  closeAdmin();
+  window.scrollTo(0, 0);
+  const content = document.getElementById('publicContent');
+  switch(page) {
+    case 'home': content.innerHTML = renderHome() + renderFooter(); break;
+    case 'movies': content.innerHTML = renderMovies() + renderFooter(); break;
+    case 'genres': content.innerHTML = renderGenres() + renderFooter(); break;
+    case 'comingSoon': content.innerHTML = renderComingSoon() + renderFooter(); break;
+    case 'movieDetail': content.innerHTML = renderMovieDetail() + renderFooter(); break;
+    case 'cart': content.innerHTML = renderCart() + renderFooter(); break;
+    case 'checkout': content.innerHTML = renderCheckout() + renderFooter(); break;
+    case 'favorites': content.innerHTML = renderFavorites() + renderFooter(); break;
+    case 'profile': content.innerHTML = renderProfile() + renderFooter(); break;
+    default: content.innerHTML = renderHome() + renderFooter();
+  }
+}
+
+/* ============================================
+   صفحه اصلی
+   ============================================ */
+function renderHome() {
+  const featured = state.movies.filter(m => m.featured && !m.comingSoon);
+  const newest = [...state.movies].filter(m => !m.comingSoon).slice(-10).reverse();
+  const bestsellers = [...state.movies].filter(m => !m.comingSoon).sort((a,b) => (b.sales||0) - (a.sales||0)).slice(0, 10);
+  const discounted = state.movies.filter(m => m.discount > 0 && !m.comingSoon).slice(0, 10);
+  const comingSoon = state.movies.filter(m => m.comingSoon);
+
+  return `
+    <div class="hero">
+      ${featured.length > 0 ? `
+        <div style="position:absolute;inset:0;">
+          <img src="${escapeHtml(featured[0].backdrop || featured[0].poster)}" alt="" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">
+          <div style="position:absolute;inset:0;background:linear-gradient(to left, rgba(0,0,0,0.3), rgba(0,0,0,0.7), var(--bg));"></div>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;max-width:700px;padding:0 32px;">
+            <h1 style="font-size:48px;font-weight:800;margin-bottom:16px;">${escapeHtml(featured[0].title)}</h1>
+            <p style="color:var(--text-dim);line-height:1.8;margin-bottom:24px;max-width:600px;">${escapeHtml(featured[0].description || '')}</p>
+            <div>
+              <button class="btn btn-primary btn-lg" onclick="openMovie('${featured[0].id}')">
+                <i class="fas fa-play"></i> مشاهده و خرید
+              </button>
+            </div>
+          </div>
+        </div>
+      ` : `
+        <div class="hero-empty">
+          <i class="fas fa-film"></i>
+          <h1>به سینه‌شاپ خوش آمدید</h1>
+          <p>به‌زودی فیلم‌های جدید در این بخش نمایش داده می‌شوند.</p>
+        </div>
+      `}
+    </div>
+
+    <section class="section container">
+      <div class="section-header"><h2 class="section-title">دسته‌بندی ژانرها</h2></div>
+      ${state.genres.length > 0
+        ? `<div class="genres-list">${state.genres.map(g => `<div class="genre-chip" onclick="filterByGenre('${g.id}')">${escapeHtml(g.name)}</div>`).join('')}</div>`
+        : `<div class="empty-small"><i class="fas fa-tags"></i>هنوز ژانری ثبت نشده است</div>`
+      }
+    </section>
+
+    <section class="section container">
+      <div class="section-header"><h2 class="section-title">فیلم‌های جدید</h2></div>
+      ${newest.length > 0
+        ? `<div class="movies-grid">${newest.map(m => renderMovieCard(m)).join('')}</div>`
+        : emptyState('fa-film', 'هنوز فیلمی اضافه نشده', 'به‌زودی فیلم‌های جدید در این بخش نمایش داده می‌شوند', '', '')
+      }
+    </section>
+
+    ${bestsellers.length > 0 ? `
+      <section class="section container">
+        <div class="section-header"><h2 class="section-title">پرفروش‌ترین‌ها</h2></div>
+        <div class="movies-grid">${bestsellers.map(m => renderMovieCard(m)).join('')}</div>
+      </section>
+    ` : ''}
+
+    ${discounted.length > 0 ? `
+      <section class="section container">
+        <div class="section-header"><h2 class="section-title">پیشنهاد ویژه با تخفیف</h2></div>
+        <div class="movies-grid">${discounted.map(m => renderMovieCard(m)).join('')}</div>
+      </section>
+    ` : ''}
+
+    <section class="section container">
+      <div class="promo-banner">
+        <h3>عضویت ویژه سینه‌شاپ</h3>
+        <p>با عضویت در خبرنامه ما، از تخفیف‌های ویژه و جدیدترین فیلم‌ها باخبر شوید.</p>
+        <form class="promo-form" onsubmit="event.preventDefault(); toast('عضویت شما با موفقیت ثبت شد'); this.reset();">
+          <input type="email" placeholder="ایمیل خود را وارد کنید" required>
+          <button class="btn btn-primary" type="submit">عضویت</button>
+        </form>
+      </div>
+    </section>
+
+    ${comingSoon.length > 0 ? `
+      <section class="section container">
+        <div class="section-header"><h2 class="section-title">به‌زودی‌ها</h2></div>
+        <div class="movies-grid">${comingSoon.map(m => renderMovieCard(m)).join('')}</div>
+      </section>
+    ` : ''}
+  `;
+}
+
+function renderMovieCard(m) {
+  const fp = finalPrice(m.price, m.discount);
+  const posterHtml = m.poster
+    ? `<img src="${escapeHtml(m.poster)}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-film no-poster\\'></i>'">`
+    : `<i class="fas fa-film no-poster"></i>`;
+  return `
+    <div class="movie-card" onclick="openMovie('${m.id}')">
+      <div class="movie-poster">
+        ${posterHtml}
+        ${m.discount > 0 ? `<span class="movie-discount">${m.discount}% تخفیف</span>` : ''}
+        ${m.comingSoon ? `<span class="movie-discount" style="background:#3b82f6">به‌زودی</span>` : ''}
+      </div>
+      <div class="movie-info">
+        <h3 class="movie-title">${escapeHtml(m.title)}</h3>
+        <div class="movie-meta">
+          <span>${m.year || '-'}</span>
+          <span class="movie-rating"><i class="fas fa-star"></i> ${m.rating > 0 ? Number(m.rating).toFixed(1) : 'جدید'}</span>
+        </div>
+        <div class="movie-footer">
+          <div>
+            ${m.discount > 0 ? `<span class="movie-price-old">${formatPrice(m.price)}</span>` : ''}
+            <span class="movie-price">${formatPrice(fp)}</span>
+          </div>
+          ${!m.comingSoon ? `
+            <button class="btn-icon" onclick="event.stopPropagation(); addToCart('${m.id}')" style="width:32px;height:32px;">
+              <i class="fas fa-shopping-cart" style="font-size:13px;"></i>
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* ============================================
+   صفحه فیلم‌ها
+   ============================================ */
+function renderMovies() {
+  const filtered = state.movies.filter(m => {
+    if (m.comingSoon) return false;
+    if (state.selectedGenre && m.genreId !== state.selectedGenre) return false;
+    if (state.searchQuery && !m.title.includes(state.searchQuery)) return false;
+    return true;
+  });
+  return `
+    <div class="container" style="padding:32px 16px;">
+      <h1 style="font-size:28px;margin-bottom:20px;">همه فیلم‌ها</h1>
+      ${state.genres.length > 0 ? `
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px;">
+          <div class="genre-chip" style="${!state.selectedGenre ? 'background:var(--primary);color:white;' : ''}" onclick="filterByGenre(null)">همه</div>
+          ${state.genres.map(g => `
+            <div class="genre-chip" style="${state.selectedGenre === g.id ? 'background:var(--primary);color:white;' : ''}" onclick="filterByGenre('${g.id}')">${escapeHtml(g.name)}</div>
+          `).join('')}
+        </div>
+      ` : ''}
+      ${filtered.length === 0
+        ? emptyState('fa-film', 'فیلمی یافت نشد', state.movies.length === 0 ? 'هنوز فیلمی در فروشگاه ثبت نشده است' : 'لطفاً فیلترها را تغییر دهید', '', '')
+        : `<div class="movies-grid">${filtered.map(m => renderMovieCard(m)).join('')}</div>`
+      }
+    </div>
+  `;
+}
+function filterByGenre(id) { state.selectedGenre = id; showPage('movies'); }
+function handleSearch(e) { if (e.key === 'Enter') { state.searchQuery = e.target.value; showPage('movies'); } }
+
+/* ============================================
+   ژانرها
+   ============================================ */
+function renderGenres() {
+  if (state.genres.length === 0) {
+    return `
+      <div class="container" style="padding:32px 16px;">
+        <h1 style="font-size:28px;margin-bottom:24px;">دسته‌بندی ژانرها</h1>
+        ${emptyState('fa-tags', 'هنوز ژانری ثبت نشده', 'به‌زودی ژانرها در این بخش نمایش داده می‌شوند', '', '')}
+      </div>
+    `;
+  }
+  return `
+    <div class="container" style="padding:32px 16px;">
+      <h1 style="font-size:28px;margin-bottom:24px;">دسته‌بندی ژانرها</h1>
+      <div class="movies-grid">
+        ${state.genres.map(g => {
+          const count = state.movies.filter(m => m.genreId === g.id && !m.comingSoon).length;
+          const poster = state.movies.find(m => m.genreId === g.id)?.poster;
+          return `
+            <div class="movie-card" onclick="filterByGenre('${g.id}')">
+              <div class="movie-poster">
+                ${poster ? `<img src="${escapeHtml(poster)}" alt="">` : `<i class="fas fa-film no-poster"></i>`}
+                <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.9),transparent);display:flex;align-items:flex-end;padding:12px;">
+                  <div>
+                    <h3 style="font-size:18px;font-weight:700;">${escapeHtml(g.name)}</h3>
+                    <p style="font-size:12px;color:var(--text-dim);margin-top:4px;">${count} فیلم</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+/* ============================================
+   به‌زودی‌ها
+   ============================================ */
+function renderComingSoon() {
+  const list = state.movies.filter(m => m.comingSoon);
+  return `
+    <div class="container" style="padding:32px 16px;">
+      <h1 style="font-size:28px;margin-bottom:24px;">به‌زودی‌ها</h1>
+      ${list.length === 0
+        ? emptyState('fa-clock', 'فعلاً فیلمی برای نمایش نیست', 'به‌زودی فیلم‌های جدید در این بخش قرار می‌گیرند', '', '')
+        : `<div class="movies-grid">${list.map(m => renderMovieCard(m)).join('')}</div>`
+      }
+    </div>
+  `;
+}
+
+/* ============================================
+   جزئیات فیلم
+   ============================================ */
+function openMovie(id) { state.currentMovie = id; showPage('movieDetail'); }
+
+function renderMovieDetail() {
+  const m = getMovie(state.currentMovie);
+  if (!m) return emptyState('fa-exclamation-triangle', 'فیلم یافت نشد', '', 'بازگشت', "showPage('movies')");
+  const fp = finalPrice(m.price, m.discount);
+  const similar = state.movies.filter(x => x.genreId === m.genreId && x.id !== m.id && !x.comingSoon).slice(0, 6);
+  const genre = getGenre(m.genreId);
+  const movieReviews = state.reviews.filter(r => r.movieId === m.id && r.status === 'APPROVED');
+
+  return `
+    <div class="hero" style="height:50vh;min-height:400px;position:relative;">
+      ${m.backdrop || m.poster
+        ? `<img src="${escapeHtml(m.backdrop || m.poster)}" alt="" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">`
+        : `<div style="width:100%;height:100%;background:linear-gradient(135deg,#1a0000,#0a0a0a);display:flex;align-items:center;justify-content:center;"><i class="fas fa-film" style="font-size:80px;color:rgba(255,255,255,0.1);"></i></div>`
+      }
+      <div style="position:absolute;inset:0;background:linear-gradient(to top, var(--bg), rgba(0,0,0,0.7), rgba(0,0,0,0.4));"></div>
+    </div>
+
+    <div class="container" style="display:grid;grid-template-columns:300px 1fr;gap:32px;margin-top:-120px;position:relative;z-index:2;padding-bottom:40px;">
+      <div style="border-radius:16px;overflow:hidden;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,0.5);aspect-ratio:2/3;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+        ${m.poster ? `<img src="${escapeHtml(m.poster)}" alt="" style="width:100%;height:100%;object-fit:cover;">` : `<i class="fas fa-film" style="font-size:60px;color:rgba(255,255,255,0.1);"></i>`}
+      </div>
+      <div>
+        <h1 style="font-size:40px;margin-bottom:16px;">${escapeHtml(m.title)}</h1>
+        <div style="display:flex;flex-wrap:wrap;gap:16px;font-size:14px;color:var(--text-dim);margin-bottom:20px;">
+          <span style="color:var(--gold);display:flex;align-items:center;gap:4px;"><i class="fas fa-star"></i> ${m.rating > 0 ? Number(m.rating).toFixed(1) : 'جدید'}</span>
+          ${m.imdb > 0 ? `<span>IMDb: ${m.imdb}</span>` : ''}
+          <span>${m.year || '-'}</span>
+          ${m.duration ? `<span><i class="fas fa-clock"></i> ${m.duration} دقیقه</span>` : ''}
+          ${m.language ? `<span><i class="fas fa-globe"></i> ${escapeHtml(m.language)}</span>` : ''}
+          ${m.quality ? `<span style="background:rgba(229,9,20,0.2);color:var(--primary);padding:3px 10px;border-radius:6px;font-size:11px;">${escapeHtml(m.quality)}</span>` : ''}
+          ${genre.name !== '-' ? `<span style="background:rgba(255,255,255,0.1);padding:3px 10px;border-radius:6px;font-size:11px;">${escapeHtml(genre.name)}</span>` : ''}
+        </div>
+        <p style="color:var(--text-dim);line-height:1.9;margin-bottom:24px;font-size:15px;">${escapeHtml(m.description || 'توضیحاتی ثبت نشده است.')}</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:24px;font-size:14px;">
+          ${m.director ? `<div><span style="color:var(--text-dim);">کارگردان: </span><span>${escapeHtml(m.director)}</span></div>` : ''}
+          ${m.country ? `<div><span style="color:var(--text-dim);">کشور: </span><span>${escapeHtml(m.country)}</span></div>` : ''}
+          ${m.cast && m.cast.length ? `<div style="grid-column:1/-1;"><span style="color:var(--text-dim);">بازیگران: </span><span>${m.cast.map(escapeHtml).join('، ')}</span></div>` : ''}
+        </div>
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:20px;">
+          <div style="background:rgba(229,9,20,0.1);border:1px solid rgba(229,9,20,0.3);border-radius:12px;padding:12px 20px;display:flex;align-items:center;gap:10px;">
+            ${m.discount > 0 ? `<span style="font-size:14px;color:var(--text-dim);text-decoration:line-through;">${formatPrice(m.price)}</span>` : ''}
+            <span style="font-size:24px;font-weight:800;color:var(--primary);">${formatPrice(fp)}</span>
+          </div>
+          ${!m.comingSoon ? `
+            <button class="btn btn-primary btn-lg" onclick="addToCart('${m.id}')"><i class="fas fa-shopping-cart"></i> افزودن به سبد</button>
+            <button class="btn btn-outline btn-lg" onclick="toggleFavorite('${m.id}')"><i class="fas fa-heart"></i> علاقه‌مندی</button>
+          ` : '<span style="background:#3b82f6;padding:12px 20px;border-radius:8px;font-size:14px;">به‌زودی</span>'}
+        </div>
+      </div>
+    </div>
+
+    <section class="container" style="padding:40px 16px;border-top:1px solid var(--border);">
+      <h2 class="section-title" style="margin-bottom:20px;">نظرات کاربران</h2>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px;">
+        <div style="display:flex;gap:4px;margin-bottom:12px;" id="starsInput">
+          ${[1,2,3,4,5].map(n => `<i class="fas fa-star" data-rating="${n}" onclick="setRating(${n})" style="font-size:20px;color:rgba(255,255,255,0.2);cursor:pointer;transition:0.2s;"></i>`).join('')}
+        </div>
+        <textarea class="form-textarea" id="reviewComment" placeholder="نظر خود را بنویسید..."></textarea>
+        <button class="btn btn-primary" style="margin-top:12px;" onclick="submitReview('${m.id}')">ثبت نظر</button>
+      </div>
+      <div id="reviewsList">
+        ${movieReviews.length === 0
+          ? `<div class="empty-small"><i class="fas fa-comments"></i>هنوز نظری ثبت نشده است</div>`
+          : movieReviews.map(r => `
+            <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div style="width:36px;height:36px;border-radius:50%;background:rgba(229,9,20,0.2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--primary);">${escapeHtml((r.user || 'ک')[0])}</div>
+                  <div>
+                    <p style="font-weight:600;font-size:14px;">${escapeHtml(r.user || 'کاربر')}</p>
+                    <p style="font-size:11px;color:var(--text-dim);">${escapeHtml(r.date || '')}</p>
+                  </div>
+                </div>
+                <div style="display:flex;gap:2px;color:var(--gold);font-size:12px;">
+                  ${Array.from({length:5}, (_,i) => `<i class="fas fa-star" style="${i < r.rating ? '' : 'opacity:0.2'}"></i>`).join('')}
+                </div>
+              </div>
+              <p style="color:var(--text-dim);font-size:14px;line-height:1.8;">${escapeHtml(r.comment)}</p>
+            </div>
+          `).join('')
+        }
+      </div>
+    </section>
+
+    ${similar.length > 0 ? `
+      <section class="container" style="padding:40px 16px;border-top:1px solid var(--border);">
+        <h2 class="section-title" style="margin-bottom:20px;">فیلم‌های مشابه</h2>
+        <div class="movies-grid">${similar.map(s => renderMovieCard(s)).join('')}</div>
+      </section>
+    ` : ''}
+  `;
+}
+
+let currentRating = 5;
+function setRating(n) {
+  currentRating = n;
+  document.querySelectorAll('#starsInput i').forEach((s, i) => {
+    s.style.color = i < n ? 'var(--gold)' : 'rgba(255,255,255,0.2)';
+  });
+}
+
+async function submitReview(movieId) {
+  const comment = document.getElementById('reviewComment').value.trim();
+  if (!comment) return toast('لطفاً نظر خود را بنویسید', 'error');
+  state.reviews.push({
+    id: Date.now().toString(),
+    movieId,
+    user: 'کاربر مهمان',
+    rating: currentRating,
+    comment,
+    status: 'PENDING',
+    date: new Date().toLocaleDateString('fa-IR'),
+  });
+  await save('reviews');
+  toast('نظر شما ثبت شد و در انتظار تایید است');
+  document.getElementById('reviewComment').value = '';
+  setRating(5);
+  showPage('movieDetail');
+}
+
+/* ============================================
+   سبد خرید (محلی)
+   ============================================ */
+function addToCart(id) {
+  const m = getMovie(id);
+  if (!m) return;
+  if (state.cart.find(c => c.id === id)) return toast('قبلاً در سبد خرید موجود است', 'error');
+  state.cart.push({ id, title: m.title, poster: m.poster, price: m.price, discount: m.discount });
+  saveLocal('cart');
+  updateCartCount();
+  toast('به سبد خرید اضافه شد');
+}
+
+function removeFromCart(id) {
+  state.cart = state.cart.filter(c => c.id !== id);
+  saveLocal('cart');
+  updateCartCount();
+  showPage('cart');
+  toast('از سبد خرید حذف شد');
+}
+
+function cartTotal() {
+  return state.cart.reduce((sum, c) => sum + finalPrice(c.price, c.discount), 0);
+}
+
+function renderCart() {
+  if (state.cart.length === 0) {
+    return `<div class="container" style="padding:80px 16px;">${emptyState('fa-shopping-bag', 'سبد خرید شما خالی است', 'فیلم‌های مورد علاقه خود را اضافه کنید', 'مشاهده فیلم‌ها', "showPage('movies')")}</div>`;
+  }
+  return `
+    <div class="container cart-layout">
+      <div>
+        <h1 style="font-size:24px;margin-bottom:20px;">سبد خرید</h1>
+        ${state.cart.map(c => `
+          <div class="cart-item">
+            <div class="cart-item-poster">${c.poster ? `<img src="${escapeHtml(c.poster)}" alt="">` : `<i class="fas fa-film" style="color:rgba(255,255,255,0.2);"></i>`}</div>
+            <div class="cart-item-info">
+              <p class="cart-item-title">${escapeHtml(c.title)}</p>
+              <p class="cart-item-price">${formatPrice(finalPrice(c.price, c.discount))}</p>
+            </div>
+            <button class="btn-icon" style="background:rgba(239,68,68,0.1);color:#ef4444;" onclick="removeFromCart('${c.id}')"><i class="fas fa-trash"></i></button>
+          </div>
+        `).join('')}
+      </div>
+      <aside class="cart-summary">
+        <h3>خلاصه سفارش</h3>
+        <div class="cart-row"><span>تعداد اقلام</span><span>${state.cart.length}</span></div>
+        <div class="cart-row"><span>مبلغ کل</span><span>${formatPrice(cartTotal())}</span></div>
+        <div class="cart-row total"><span>قابل پرداخت</span><span>${formatPrice(cartTotal())}</span></div>
+        <button class="btn btn-primary btn-block btn-lg" style="margin-top:16px;" onclick="showPage('checkout')">ادامه فرآیند خرید</button>
+      </aside>
+    </div>
+  `;
+}
+
+/* ============================================
+   پرداخت
+   ============================================ */
+let appliedDiscount = 0;
+let appliedCode = '';
+
+function renderCheckout() {
+  if (state.cart.length === 0) { setTimeout(() => showPage('cart'), 0); return ''; }
+  return `
+    <div class="container" style="padding:32px 16px;">
+      <h1 style="font-size:24px;margin-bottom:24px;">پرداخت</h1>
+      <div class="cart-layout">
+        <div>
+          <div class="admin-card" style="background:var(--card);border-color:var(--border);">
+            <div style="padding:20px;">
+              <h3 style="margin-bottom:16px;">کد تخفیف</h3>
+              <div style="display:flex;gap:10px;">
+                <input type="text" class="form-input" id="discountCode" placeholder="کد تخفیف" style="text-transform:uppercase;">
+                <button class="btn btn-outline" onclick="applyDiscountCode()">اعمال</button>
+              </div>
+              ${appliedDiscount > 0 ? `<p style="color:#10b981;font-size:13px;margin-top:10px;"><i class="fas fa-check-circle"></i> کد ${escapeHtml(appliedCode)} اعمال شد (${formatPrice(appliedDiscount)} تخفیف)</p>` : ''}
+            </div>
+          </div>
+          <div class="admin-card" style="background:var(--card);border-color:var(--border);margin-top:16px;">
+            <div style="padding:20px;">
+              <h3 style="margin-bottom:16px;">اطلاعات پرداخت</h3>
+              <p style="font-size:14px;color:var(--text-dim);line-height:1.8;">پس از کلیک روی دکمه پرداخت، سفارش شما ثبت می‌شود.</p>
+            </div>
+          </div>
+        </div>
+        <aside class="cart-summary">
+          <h3>خلاصه پرداخت</h3>
+          <div class="cart-row"><span>مجموع</span><span>${formatPrice(cartTotal())}</span></div>
+          ${appliedDiscount > 0 ? `<div class="cart-row" style="color:#10b981;"><span>تخفیف</span><span>- ${formatPrice(appliedDiscount)}</span></div>` : ''}
+          <div class="cart-row total"><span>قابل پرداخت</span><span>${formatPrice(Math.max(0, cartTotal() - appliedDiscount))}</span></div>
+          <button class="btn btn-primary btn-block btn-lg" style="margin-top:16px;" onclick="processPayment()"><i class="fas fa-lock"></i> پرداخت و تکمیل خرید</button>
+        </aside>
+      </div>
+    </div>
+  `;
+}
+
+function applyDiscountCode() {
+  const code = document.getElementById('discountCode').value.trim().toUpperCase();
+  if (!code) return toast('کد را وارد کنید', 'error');
+  const dc = state.discounts.find(d => d.code === code && d.active);
+  if (!dc) return toast('کد تخفیف نامعتبر است', 'error');
+  if (dc.usage >= dc.maxUsage) return toast('سقف استفاده از این کد پر شده', 'error');
+  appliedCode = code;
+  appliedDiscount = dc.percent ? Math.round(cartTotal() * dc.percent / 100) : (dc.amount || 0);
+  showPage('checkout');
+  toast(`کد تخفیف اعمال شد: ${formatPrice(appliedDiscount)}`);
+}
+
+async function processPayment() {
+  toast('در حال ثبت سفارش...');
+  const order = {
+    id: 'ORD-' + Date.now(),
+    user: 'کاربر مهمان',
+    email: 'guest@cineshop.ir',
+    items: state.cart.length,
+    amount: Math.max(0, cartTotal() - appliedDiscount),
+    status: 'PAID',
+    date: new Date().toLocaleDateString('fa-IR'),
+    itemsDetail: [...state.cart],
+  };
+  state.orders.unshift(order);
+
+  // به‌روزرسانی فروش
+  state.cart.forEach(c => {
+    const m = getMovie(c.id);
+    if (m) m.sales = (m.sales || 0) + 1;
+  });
+
+  // به‌روزرسانی کد تخفیف
+  if (appliedCode) {
+    const dc = state.discounts.find(d => d.code === appliedCode);
+    if (dc) dc.usage = (dc.usage || 0) + 1;
+  }
+
+  await save('orders');
+  await save('movies');
+  await save('discounts');
+
+  state.cart = [];
+  appliedDiscount = 0;
+  appliedCode = '';
+  saveLocal('cart');
+  updateCartCount();
+
+  toast('پرداخت با موفقیت انجام شد');
+  setTimeout(() => showPage('profile'), 1000);
+}
+
+/* ============================================
+   علاقه‌مندی‌ها (محلی)
+   ============================================ */
+function toggleFavorite(id) {
+  const idx = state.favorites.indexOf(id);
+  if (idx >= 0) { state.favorites.splice(idx, 1); toast('از علاقه‌مندی‌ها حذف شد'); }
+  else { state.favorites.push(id); toast('به علاقه‌مندی‌ها اضافه شد'); }
+  saveLocal('favorites');
+}
+
+function renderFavorites() {
+  const favs = state.favorites.map(id => getMovie(id)).filter(Boolean);
+  return `
+    <div class="container" style="padding:32px 16px;">
+      <h1 style="font-size:24px;margin-bottom:24px;">علاقه‌مندی‌های من</h1>
+      ${favs.length === 0
+        ? emptyState('fa-heart', 'لیست علاقه‌مندی‌ها خالی است', 'فیلم‌های مورد علاقه خود را اضافه کنید', 'مشاهده فیلم‌ها', "showPage('movies')")
+        : `<div class="movies-grid">${favs.map(m => renderMovieCard(m)).join('')}</div>`
+      }
+    </div>
+  `;
+}
+
+/* ============================================
+   پنل کاربری
+   ============================================ */
+function renderProfile() {
+  const userOrders = state.orders.slice(0, 5);
+  const paidMovies = state.orders.flatMap(o => o.itemsDetail || []);
+  return `
+    <div class="container profile-layout">
+      <aside class="profile-sidebar">
+        <div class="profile-user">
+          <p>خوش آمدید</p>
+          <p>کاربر مهمان</p>
+        </div>
+        <nav class="profile-menu">
+          <a class="active"><i class="fas fa-user"></i> پروفایل من</a>
+          <a onclick="toast('این بخش در نسخه دمو فعال نیست')"><i class="fas fa-book"></i> کتابخانه من</a>
+          <a onclick="toast('این بخش در نسخه دمو فعال نیست')"><i class="fas fa-shopping-bag"></i> سفارش‌ها</a>
+          <a onclick="showPage('favorites')"><i class="fas fa-heart"></i> علاقه‌مندی‌ها</a>
+        </nav>
+      </aside>
+      <div>
+        <h1 style="font-size:24px;margin-bottom:20px;">پروفایل من</h1>
+        <div class="admin-card" style="background:var(--card);border-color:var(--border);">
+          <div style="padding:24px;">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;font-size:14px;">
+              <div><span style="color:var(--text-dim);">نام: </span><span>کاربر مهمان</span></div>
+              <div><span style="color:var(--text-dim);">ایمیل: </span><span>guest@cineshop.ir</span></div>
+              <div><span style="color:var(--text-dim);">نقش: </span><span>کاربر عادی</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="stats-grid" style="margin-top:20px;">
+          <div class="stat-card"><div class="stat-icon"><i class="fas fa-shopping-bag"></i></div><div class="stat-info"><p>سفارش‌ها</p><p>${state.orders.length}</p></div></div>
+          <div class="stat-card"><div class="stat-icon red"><i class="fas fa-heart"></i></div><div class="stat-info"><p>علاقه‌مندی‌ها</p><p>${state.favorites.length}</p></div></div>
+          <div class="stat-card"><div class="stat-icon green"><i class="fas fa-comments"></i></div><div class="stat-info"><p>نظرات</p><p>${state.reviews.length}</p></div></div>
+        </div>
+        <h2 style="font-size:20px;margin:32px 0 16px;">کتابخانه من</h2>
+        ${paidMovies.length === 0
+          ? emptyState('fa-book', 'کتابخانه شما خالی است', 'هنوز فیلمی خریداری نکرده‌اید', 'مشاهده فیلم‌ها', "showPage('movies')")
+          : `<div class="movies-grid">${paidMovies.map(m => `
+              <div class="movie-card"><div class="movie-poster">${m.poster ? `<img src="${escapeHtml(m.poster)}" alt="">` : `<i class="fas fa-film no-poster"></i>`}</div>
+              <div class="movie-info"><h3 class="movie-title">${escapeHtml(m.title)}</h3>
+              <div style="display:flex;gap:8px;margin-top:8px;">
+                <button class="btn btn-primary btn-sm" style="flex:1;" onclick="toast('شروع پخش...')"><i class="fas fa-play"></i> پخش</button>
+                <button class="btn btn-outline btn-sm" style="flex:1;" onclick="toast('دانلود آغاز شد')"><i class="fas fa-download"></i> دانلود</button>
+              </div></div></div>
+            `).join('')}</div>`
+        }
+        <h2 style="font-size:20px;margin:32px 0 16px;">سفارش‌های اخیر</h2>
+        ${userOrders.length === 0
+          ? `<div class="empty-small"><i class="fas fa-shopping-bag"></i>سفارشی ثبت نشده است</div>`
+          : `<div class="admin-card" style="background:var(--card);border-color:var(--border);"><div class="table-wrap"><table>
+              <thead><tr><th>شماره</th><th>تعداد</th><th>مبلغ</th><th>وضعیت</th><th>تاریخ</th></tr></thead>
+              <tbody>${userOrders.map(o => `
+                <tr>
+                  <td style="font-family:monospace;font-size:12px;">${escapeHtml(o.id)}</td>
+                  <td>${o.items}</td>
+                  <td>${formatPrice(o.amount)}</td>
+                  <td><span class="status-badge status-paid">پرداخت شده</span></td>
+                  <td style="color:var(--text-dim);">${escapeHtml(o.date)}</td>
+                </tr>
+              `).join('')}</tbody>
+            </table></div></div>`
+        }
+      </div>
+    </div>
+  `;
+}
+
+/* ============================================
+   فوتر
+   ============================================ */
+function renderFooter() {
+  return `
+    <footer style="border-top:1px solid var(--border);margin-top:60px;background:#000;">
+      <div class="container" style="padding:40px 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:32px;font-size:14px;">
+        <div>
+          <div class="logo" style="margin-bottom:12px;"><i class="fas fa-film"></i> سینه‌شاپ</div>
+          <p style="color:var(--text-dim);line-height:1.8;">مرجع خرید و دانلود قانونی فیلم‌های روز دنیا با کیفیت اورجینال.</p>
+        </div>
+        <div>
+          <h4 style="margin-bottom:12px;">دسترسی سریع</h4>
+          <ul style="list-style:none;color:var(--text-dim);line-height:2;">
+            <li><a onclick="showPage('movies')">همه فیلم‌ها</a></li>
+            <li><a onclick="showPage('comingSoon')">به‌زودی‌ها</a></li>
+            <li><a onclick="showPage('genres')">ژانرها</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 style="margin-bottom:12px;">پشتیبانی</h4>
+          <ul style="list-style:none;color:var(--text-dim);line-height:2;">
+            <li>سوالات متداول</li>
+            <li>قوانین و مقررات</li>
+            <li>تماس با ما</li>
+          </ul>
+        </div>
+        <div>
+          <h4 style="margin-bottom:12px;">درباره ما</h4>
+          <p style="color:var(--text-dim);line-height:1.8;">سینه‌شاپ با هدف ارائه فیلم‌های اورجینال به علاقه‌مندان سینما راه‌اندازی شده است.</p>
+        </div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding:16px;text-align:center;font-size:12px;color:var(--text-dim);">
+        © ۱۴۰۴ سینه‌شاپ - تمامی حقوق محفوظ است.
+      </div>
+    </footer>
+  `;
+}
+
+/* ============================================
+   پنل ادمین
+   ============================================ */
+function openAdmin() {
+  document.getElementById('publicApp').style.display = 'none';
+  document.getElementById('adminApp').classList.add('active');
+  adminPage('dashboard');
+  toast('ورود به پنل مدیریت');
+}
+function closeAdmin() {
+  document.getElementById('publicApp').style.display = 'block';
+  document.getElementById('adminApp').classList.remove('active');
+}
+function toggleAdminSidebar() {
+  document.getElementById('adminSidebar').classList.toggle('open');
+}
+
+function adminPage(page) {
+  document.querySelectorAll('.admin-menu a').forEach(a => a.classList.remove('active'));
+  document.querySelector(`.admin-menu a[data-page="${page}"]`)?.classList.add('active');
+  const content = document.getElementById('adminContent');
+  switch(page) {
+    case 'dashboard': content.innerHTML = renderDashboard(); break;
+    case 'movies': content.innerHTML = renderAdminMovies(); break;
+    case 'genres': content.innerHTML = renderAdminGenres(); break;
+    case 'users': content.innerHTML = renderAdminUsers(); break;
+    case 'orders': content.innerHTML = renderAdminOrders(); break;
+    case 'discounts': content.innerHTML = renderAdminDiscounts(); break;
+    case 'reviews': content.innerHTML = renderAdminReviews(); break;
+    case 'settings': content.innerHTML = renderAdminSettings(); break;
+  }
+}
+
+function statusBadge(s) {
+  const map = {
+    PAID: ['status-paid', 'پرداخت شده'],
+    PENDING: ['status-pending', 'در انتظار'],
+    CANCELLED: ['status-cancelled', 'لغو شده'],
+    PUBLISHED: ['status-paid', 'منتشر شده'],
+    DRAFT: ['status-pending', 'پیش‌نویس'],
+    APPROVED: ['status-paid', 'تایید شده'],
+    REJECTED: ['status-cancelled', 'رد شده'],
+    ADMIN: ['status-admin', 'ادمین'],
+    SUPER_ADMIN: ['status-admin', 'سوپر ادمین'],
+    USER: ['status-user', 'کاربر'],
+  };
+  const [cls, txt] = map[s] || ['status-user', s];
+  return `<span class="status-badge ${cls}">${txt}</span>`;
+}
+
+function renderDashboard() {
+  const totalSales = state.orders.filter(o => o.status === 'PAID').reduce((s, o) => s + o.amount, 0);
+  const chartData = state.orders.slice(0, 7).map(o => o.amount);
+  const max = Math.max(...chartData, 1);
+  return `
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-icon"><i class="fas fa-dollar-sign"></i></div><div class="stat-info"><p>فروش امروز</p><p>${formatPrice(0)}</p></div></div>
+      <div class="stat-card"><div class="stat-icon green"><i class="fas fa-chart-line"></i></div><div class="stat-info"><p>فروش این ماه</p><p>${formatPrice(totalSales)}</p></div></div>
+      <div class="stat-card"><div class="stat-icon yellow"><i class="fas fa-coins"></i></div><div class="stat-info"><p>کل فروش</p><p>${formatPrice(totalSales)}</p></div></div>
+      <div class="stat-card"><div class="stat-icon purple"><i class="fas fa-users"></i></div><div class="stat-info"><p>کاربران</p><p>${state.users.length}</p></div></div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-icon green"><i class="fas fa-shopping-bag"></i></div><div class="stat-info"><p>سفارش موفق</p><p>${state.orders.filter(o => o.status === 'PAID').length}</p></div></div>
+      <div class="stat-card"><div class="stat-icon yellow"><i class="fas fa-clock"></i></div><div class="stat-info"><p>در انتظار</p><p>${state.orders.filter(o => o.status === 'PENDING').length}</p></div></div>
+      <div class="stat-card"><div class="stat-icon red"><i class="fas fa-times-circle"></i></div><div class="stat-info"><p>لغو شده</p><p>${state.orders.filter(o => o.status === 'CANCELLED').length}</p></div></div>
+      <div class="stat-card"><div class="stat-icon"><i class="fas fa-film"></i></div><div class="stat-info"><p>کل فیلم‌ها</p><p>${state.movies.length}</p></div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px;">
+      <div class="admin-card">
+        <div class="admin-card-header"><h3>نمودار فروش ۷ سفارش اخیر</h3></div>
+        <div style="padding:20px;">
+          ${chartData.length === 0 ? `
+            <div style="height:200px;display:flex;align-items:center;justify-content:center;color:var(--text-dim);">
+              <div style="text-align:center;"><i class="fas fa-chart-bar" style="font-size:32px;opacity:0.2;display:block;margin-bottom:8px;"></i>داده‌ای برای نمایش نیست</div>
+            </div>
+          ` : `
+            <div style="display:flex;align-items:flex-end;gap:12px;height:200px;padding:20px 0;">
+              ${chartData.map(v => `<div style="flex:1;background:linear-gradient(to top,var(--admin-accent),rgba(59,130,246,0.3));border-radius:6px 6px 0 0;min-height:20px;height:${(v/max)*100}%;"></div>`).join('')}
+            </div>
+          `}
+        </div>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-header"><h3>پرفروش‌ترین فیلم‌ها</h3></div>
+        <div style="padding:16px;">
+          ${state.movies.length === 0
+            ? `<div style="text-align:center;padding:20px;color:var(--text-dim);font-size:13px;"><i class="fas fa-film" style="font-size:24px;opacity:0.2;display:block;margin-bottom:8px;"></i>هنوز فیلمی ثبت نشده</div>`
+            : [...state.movies].sort((a,b) => (b.sales||0) - (a.sales||0)).slice(0, 5).map((m, i) => `
+              <div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03);">
+                <span style="color:var(--text-dim);width:20px;">${i + 1}</span>
+                <div class="table-poster">${m.poster ? `<img src="${escapeHtml(m.poster)}">` : `<i class="fas fa-film"></i>`}</div>
+                <div style="flex:1;min-width:0;">
+                  <p style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(m.title)}</p>
+                  <p style="font-size:11px;color:var(--text-dim);">${m.sales || 0} فروش</p>
+                </div>
+              </div>
+            `).join('')
+          }
+        </div>
+      </div>
+    </div>
+    <div class="admin-card">
+      <div class="admin-card-header"><h3>سفارش‌های اخیر</h3></div>
+      ${state.orders.length === 0
+        ? `<div style="padding:40px;text-align:center;color:var(--text-dim);"><i class="fas fa-shopping-bag" style="font-size:32px;opacity:0.2;display:block;margin-bottom:8px;"></i>هنوز سفارشی ثبت نشده است</div>`
+        : `<div class="table-wrap"><table>
+            <thead><tr><th>شماره</th><th>کاربر</th><th>تعداد</th><th>مبلغ</th><th>وضعیت</th><th>تاریخ</th></tr></thead>
+            <tbody>${state.orders.slice(0, 5).map(o => `
+              <tr>
+                <td style="font-family:monospace;font-size:12px;">${escapeHtml(o.id)}</td>
+                <td>${escapeHtml(o.user)}</td>
+                <td>${o.items}</td>
+                <td>${formatPrice(o.amount)}</td>
+                <td>${statusBadge(o.status)}</td>
+                <td style="color:var(--text-dim);">${escapeHtml(o.date)}</td>
+              </tr>
+            `).join('')}</tbody>
+          </table></div>`
+      }
+    </div>
+  `;
+}
+
+/* ============================================
+   ادمین - فیلم‌ها
+   ============================================ */
+function renderAdminMovies() {
+  return `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h1 style="font-size:20px;">مدیریت فیلم‌ها</h1>
+      <button class="btn btn-primary" onclick="openMovieForm()"><i class="fas fa-plus"></i> افزودن فیلم</button>
+    </div>
+    ${state.movies.length === 0
+      ? `<div class="admin-card"><div style="padding:60px 20px;text-align:center;color:var(--text-dim);">
+          <i class="fas fa-film" style="font-size:48px;opacity:0.15;display:block;margin-bottom:12px;"></i>
+          <h3 style="color:white;font-size:18px;margin-bottom:8px;">هنوز فیلمی اضافه نشده است</h3>
+          <p style="font-size:14px;margin-bottom:20px;">برای شروع، اولین فیلم را اضافه کنید</p>
+          <button class="btn btn-primary" onclick="openMovieForm()"><i class="fas fa-plus"></i> افزودن فیلم</button>
+        </div></div>`
+      : `<div class="admin-card"><div class="table-wrap"><table>
+          <thead><tr><th>پوستر</th><th>عنوان</th><th>ژانر</th><th>سال</th><th>قیمت</th><th>تخفیف</th><th>فروش</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+          <tbody>${state.movies.map(m => `
+            <tr>
+              <td><div class="table-poster">${m.poster ? `<img src="${escapeHtml(m.poster)}">` : `<i class="fas fa-film"></i>`}</div></td>
+              <td style="font-weight:600;">${escapeHtml(m.title)}</td>
+              <td style="color:var(--text-dim);">${escapeHtml(getGenre(m.genreId).name)}</td>
+              <td>${m.year || '-'}</td>
+              <td>${formatPrice(m.price)}</td>
+              <td>${m.discount}%</td>
+              <td>${m.sales || 0}</td>
+              <td>${statusBadge(m.comingSoon ? 'DRAFT' : 'PUBLISHED')}</td>
+              <td>
+                <button class="btn-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;width:32px;height:32px;" onclick="openMovieForm('${m.id}')"><i class="fas fa-edit"></i></button>
+                <button class="btn-icon" style="background:rgba(239,68,68,0.1);color:#ef4444;width:32px;height:32px;" onclick="deleteMovie('${m.id}')"><i class="fas fa-trash"></i></button>
+              </td>
+            </tr>
+          `).join('')}</tbody>
+        </table></div></div>`
+    }
+
+    <div class="modal-overlay" id="movieModal">
+      <div class="modal modal-lg">
+        <div class="modal-header">
+          <h2 class="modal-title" id="movieFormTitle">افزودن فیلم جدید</h2>
+          <button class="modal-close" onclick="closeMovieForm()"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="movieForm" onsubmit="saveMovie(event)">
+          <input type="hidden" id="mId">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="form-group"><label class="form-label">عنوان *</label><input class="form-input" id="mTitle" required></div>
+            <div class="form-group"><label class="form-label">سال</label><input type="number" class="form-input" id="mYear" placeholder="2024"></div>
+            <div class="form-group"><label class="form-label">قیمت (تومان) *</label><input type="number" class="form-input" id="mPrice" required value="0"></div>
+            <div class="form-group"><label class="form-label">تخفیف (%)</label><input type="number" class="form-input" id="mDiscount" value="0" min="0" max="100"></div>
+            <div class="form-group"><label class="form-label">امتیاز (0-10)</label><input type="number" step="0.1" class="form-input" id="mRating" value="0"></div>
+            <div class="form-group"><label class="form-label">IMDb</label><input type="number" step="0.1" class="form-input" id="mImdb" value="0"></div>
+            <div class="form-group"><label class="form-label">مدت (دقیقه)</label><input type="number" class="form-input" id="mDuration" value="120"></div>
+            <div class="form-group"><label class="form-label">کیفیت</label>
+              <select class="form-select" id="mQuality"><option>720p</option><option selected>1080p</option><option>4K</option></select>
+            </div>
+            <div class="form-group"><label class="form-label">زبان</label><input class="form-input" id="mLanguage" value="فارسی"></div>
+            <div class="form-group"><label class="form-label">کشور</label><input class="form-input" id="mCountry"></div>
+            <div class="form-group"><label class="form-label">کارگردان</label><input class="form-input" id="mDirector"></div>
+            <div class="form-group"><label class="form-label">بازیگران (با ، جدا)</label><input class="form-input" id="mCast"></div>
+            <div class="form-group"><label class="form-label">ژانر</label>
+              <select class="form-select" id="mGenre">
+                <option value="">بدون ژانر</option>
+                ${state.genres.map(g => `<option value="${g.id}">${escapeHtml(g.name)}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group"><label class="form-label">وضعیت</label>
+              <select class="form-select" id="mStatus">
+                <option value="published">منتشر شده</option>
+                <option value="draft">پیش‌نویس</option>
+              </select>
+            </div>
+            <div class="form-group" style="grid-column:1/-1;"><label class="form-label">لینک پوستر</label><input class="form-input" id="mPoster" placeholder="https://..."></div>
+            <div class="form-group" style="grid-column:1/-1;"><label class="form-label">لینک تصویر پس‌زمینه</label><input class="form-input" id="mBackdrop" placeholder="https://..."></div>
+            <div class="form-group" style="grid-column:1/-1;"><label class="form-label">توضیحات</label><textarea class="form-textarea" id="mDescription" rows="4"></textarea></div>
+            <div class="form-group" style="grid-column:1/-1;display:flex;gap:20px;">
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="mFeatured"> <span>ویژه</span></label>
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="mComingSoon"> <span>به‌زودی</span></label>
+            </div>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:20px;">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> ذخیره</button>
+            <button type="button" class="btn btn-outline" onclick="closeMovieForm()">انصراف</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+}
+
+function openMovieForm(id) {
+  const modal = document.getElementById('movieModal');
+  document.getElementById('movieForm').reset();
+  document.getElementById('mId').value = '';
+  if (id) {
+    const m = getMovie(id);
+    if (!m) return;
+    document.getElementById('movieFormTitle').textContent = 'ویرایش فیلم';
+    document.getElementById('mId').value = m.id;
+    document.getElementById('mTitle').value = m.title || '';
+    document.getElementById('mYear').value = m.year || '';
+    document.getElementById('mPrice').value = m.price || 0;
+    document.getElementById('mDiscount').value = m.discount || 0;
+    document.getElementById('mRating').value = m.rating || 0;
+    document.getElementById('mImdb').value = m.imdb || 0;
+    document.getElementById('mDuration').value = m.duration || 120;
+    document.getElementById('mQuality').value = m.quality || '1080p';
+    document.getElementById('mLanguage').value = m.language || 'فارسی';
+    document.getElementById('mCountry').value = m.country || '';
+    document.getElementById('mDirector').value = m.director || '';
+    document.getElementById('mCast').value = (m.cast || []).join('، ');
+    document.getElementById('mGenre').value = m.genreId || '';
+    document.getElementById('mStatus').value = m.comingSoon ? 'draft' : 'published';
+    document.getElementById('mPoster').value = m.poster || '';
+    document.getElementById('mBackdrop').value = m.backdrop || '';
+    document.getElementById('mDescription').value = m.description || '';
+    document.getElementById('mFeatured').checked = !!m.featured;
+    document.getElementById('mComingSoon').checked = !!m.comingSoon;
+  } else {
+    document.getElementById('movieFormTitle').textContent = 'افزودن فیلم جدید';
+  }
+  modal.classList.add('active');
+}
+
+function closeMovieForm() { document.getElementById('movieModal').classList.remove('active'); }
+
+async function saveMovie(e) {
+  e.preventDefault();
+  const id = document.getElementById('mId').value;
+  const data = {
+    title: document.getElementById('mTitle').value.trim(),
+    year: +document.getElementById('mYear').value || 0,
+    price: +document.getElementById('mPrice').value || 0,
+    discount: +document.getElementById('mDiscount').value || 0,
+    rating: +document.getElementById('mRating').value || 0,
+    imdb: +document.getElementById('mImdb').value || 0,
+    duration: +document.getElementById('mDuration').value || 0,
+    quality: document.getElementById('mQuality').value,
+    language: document.getElementById('mLanguage').value.trim(),
+    country: document.getElementById('mCountry').value.trim(),
+    director: document.getElementById('mDirector').value.trim(),
+    cast: document.getElementById('mCast').value.split('،').map(s => s.trim()).filter(Boolean),
+    genreId: document.getElementById('mGenre').value || null,
+    comingSoon: document.getElementById('mComingSoon').checked,
+    featured: document.getElementById('mFeatured').checked,
+    poster: document.getElementById('mPoster').value.trim(),
+    backdrop: document.getElementById('mBackdrop').value.trim(),
+    description: document.getElementById('mDescription').value.trim(),
+    status: document.getElementById('mStatus').value,
+  };
+  if (id) {
+    const idx = state.movies.findIndex(m => m.id === id);
+    state.movies[idx] = { ...state.movies[idx], ...data };
+    toast('فیلم ویرایش شد');
+  } else {
+    state.movies.push({ id: 'm_' + Date.now(), ...data, sales: 0, createdAt: Date.now() });
+    toast('فیلم اضافه شد');
+  }
+  await save('movies');
+  closeMovieForm();
+  adminPage('movies');
+}
+
+async function deleteMovie(id) {
+  if (!confirm('آیا از حذف این فیلم مطمئن هستید؟')) return;
+  state.movies = state.movies.filter(m => m.id !== id);
+  await save('movies');
+  toast('فیلم حذف شد');
+  adminPage('movies');
+}
+
+/* ============================================
+   ادمین - ژانرها
+   ============================================ */
+function renderAdminGenres() {
+  return `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h1 style="font-size:20px;">مدیریت ژانرها</h1>
+      <button class="btn btn-primary" onclick="openGenreForm()"><i class="fas fa-plus"></i> افزودن ژانر</button>
+    </div>
+    ${state.genres.length === 0
+      ? `<div class="admin-card"><div style="padding:60px 20px;text-align:center;color:var(--text-dim);">
+          <i class="fas fa-tags" style="font-size:48px;opacity:0.15;display:block;margin-bottom:12px;"></i>
+          <h3 style="color:white;font-size:18px;margin-bottom:8px;">هنوز ژانری اضافه نشده</h3>
+          <p style="font-size:14px;margin-bottom:20px;">اولین ژانر را اضافه کنید</p>
+          <button class="btn btn-primary" onclick="openGenreForm()"><i class="fas fa-plus"></i> افزودن ژانر</button>
+        </div></div>`
+      : `<div class="admin-card"><div class="table-wrap"><table>
+          <thead><tr><th>نام</th><th>تعداد فیلم</th><th>عملیات</th></tr></thead>
+          <tbody>${state.genres.map(g => {
+            const count = state.movies.filter(m => m.genreId === g.id).length;
+            return `
+              <tr>
+                <td style="font-weight:600;">${escapeHtml(g.name)}</td>
+                <td>${count}</td>
+                <td>
+                  <button class="btn-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;width:32px;height:32px;" onclick="openGenreForm('${g.id}')"><i class="fas fa-edit"></i></button>
+                  <button class="btn-icon" style="background:rgba(239,68,68,0.1);color:#ef4444;width:32px;height:32px;" onclick="deleteGenre('${g.id}')"><i class="fas fa-trash"></i></button>
+                </td>
+              </tr>
+            `;
+          }).join('')}</tbody>
+        </table></div></div>`
+    }
+    <div class="modal-overlay" id="genreModal">
+      <div class="modal">
+        <div class="modal-header">
+          <h2 class="modal-title" id="genreFormTitle">افزودن ژانر</h2>
+          <button class="modal-close" onclick="closeGenreForm()"><i class="fas fa-times"></i></button>
+        </div>
+        <form onsubmit="saveGenre(event)">
+          <input type="hidden" id="gId">
+          <div class="form-group"><label class="form-label">نام ژانر *</label><input class="form-input" id="gName" required></div>
+          <div style="display:flex;gap:12px;margin-top:20px;">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> ذخیره</button>
+            <button type="button" class="btn btn-outline" onclick="closeGenreForm()">انصراف</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+}
+
+function openGenreForm(id) {
+  const modal = document.getElementById('genreModal');
+  document.getElementById('gId').value = '';
+  document.getElementById('gName').value = '';
+  document.getElementById('genreFormTitle').textContent = 'افزودن ژانر';
+  if (id) {
+    const g = state.genres.find(x => x.id === id);
+    if (!g) return;
+    document.getElementById('gId').value = g.id;
+    document.getElementById('gName').value = g.name;
+    document.getElementById('genreFormTitle').textContent = 'ویرایش ژانر';
+  }
+  modal.classList.add('active');
+}
+
+function closeGenreForm() { document.getElementById('genreModal').classList.remove('active'); }
+
+async function saveGenre(e) {
+  e.preventDefault();
+  const id = document.getElementById('gId').value;
+  const name = document.getElementById('gName').value.trim();
+  if (!name) return;
+  if (id) {
+    const idx = state.genres.findIndex(g => g.id === id);
+    state.genres[idx].name = name;
+    toast('ژانر ویرایش شد');
+  } else {
+    state.genres.push({ id: 'g_' + Date.now(), name });
+    toast('ژانر اضافه شد');
+  }
+  await save('genres');
+  closeGenreForm();
+  adminPage('genres');
+}
+
+async function deleteGenre(id) {
+  if (!confirm('آیا از حذف این ژانر مطمئن هستید؟')) return;
+  state.genres = state.genres.filter(g => g.id !== id);
+  state.movies.forEach(m => { if (m.genreId === id) m.genreId = null; });
+  await save('genres');
+  await save('movies');
+  toast('ژانر حذف شد');
+  adminPage('genres');
+}
+
+/* ============================================
+   ادمین - کاربران
+   ============================================ */
+function renderAdminUsers() {
+  return `
+    <h1 style="font-size:20px;margin-bottom:20px;">مدیریت کاربران</h1>
+    ${state.users.length === 0
+      ? `<div class="admin-card"><div style="padding:60px 20px;text-align:center;color:var(--text-dim);">
+          <i class="fas fa-users" style="font-size:48px;opacity:0.15;display:block;margin-bottom:12px;"></i>
+          <h3 style="color:white;font-size:18px;margin-bottom:8px;">هنوز کاربری ثبت نشده</h3>
+          <p style="font-size:14px;">کاربران پس از ثبت‌نام در اینجا نمایش داده می‌شوند</p>
+        </div></div>`
+      : `<div class="admin-card"><div class="table-wrap"><table>
+          <thead><tr><th>نام</th><th>ایمیل</th><th>نقش</th><th>وضعیت</th></tr></thead>
+          <tbody>${state.users.map(u => `
+            <tr>
+              <td style="font-weight:600;">${escapeHtml(u.name)}</td>
+              <td style="color:var(--text-dim);">${escapeHtml(u.email)}</td>
+              <td>${statusBadge(u.role || 'USER')}</td>
+              <td>${u.blocked ? statusBadge('CANCELLED') : statusBadge('PUBLISHED')}</td>
+            </tr>
+          `).join('')}</tbody>
+        </table></div></div>`
+    }
+  `;
+}
+
+/* ============================================
+   ادمین - سفارش‌ها
+   ============================================ */
+function renderAdminOrders() {
+  return `
+    <h1 style="font-size:20px;margin-bottom:20px;">مدیریت سفارش‌ها</h1>
+    ${state.orders.length === 0
+      ? `<div class="admin-card"><div style="padding:60px 20px;text-align:center;color:var(--text-dim);">
+          <i class="fas fa-shopping-bag" style="font-size:48px;opacity:0.15;display:block;margin-bottom:12px;"></i>
+          <h3 style="color:white;font-size:18px;margin-bottom:8px;">هنوز سفارشی ثبت نشده</h3>
+          <p style="font-size:14px;">سفارش‌های کاربران در اینجا نمایش داده می‌شوند</p>
+        </div></div>`
+      : `<div class="admin-card"><div class="table-wrap"><table>
+          <thead><tr><th>شماره</th><th>کاربر</th><th>ایمیل</th><th>تعداد</th><th>مبلغ</th><th>وضعیت</th><th>تاریخ</th></tr></thead>
+          <tbody>${state.orders.map(o => `
+            <tr>
+              <td style="font-family:monospace;font-size:12px;">${escapeHtml(o.id)}</td>
+              <td>${escapeHtml(o.user)}</td>
+              <td style="color:var(--text-dim);">${escapeHtml(o.email)}</td>
+              <td>${o.items}</td>
+              <td style="font-weight:600;">${formatPrice(o.amount)}</td>
+              <td>${statusBadge(o.status)}</td>
+              <td style="color:var(--text-dim);">${escapeHtml(o.date)}</td>
+            </tr>
+          `).join('')}</tbody>
+        </table></div></div>`
+    }
+  `;
+}
+
+/* ============================================
+   ادمین - تخفیف‌ها
+   ============================================ */
+function renderAdminDiscounts() {
+  return `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h1 style="font-size:20px;">کدهای تخفیف</h1>
+      <button class="btn btn-primary" onclick="openDiscountForm()"><i class="fas fa-plus"></i> افزودن کد</button>
+    </div>
+    ${state.discounts.length === 0
+      ? `<div class="admin-card"><div style="padding:60px 20px;text-align:center;color:var(--text-dim);">
+          <i class="fas fa-percent" style="font-size:48px;opacity:0.15;display:block;margin-bottom:12px;"></i>
+          <h3 style="color:white;font-size:18px;margin-bottom:8px;">هنوز کد تخفیفی ثبت نشده</h3>
+          <p style="font-size:14px;margin-bottom:20px;">اولین کد تخفیف را اضافه کنید</p>
+          <button class="btn btn-primary" onclick="openDiscountForm()"><i class="fas fa-plus"></i> افزودن کد</button>
+        </div></div>`
+      : `<div class="admin-card"><div class="table-wrap"><table>
+          <thead><tr><th>کد</th><th>درصد</th><th>مبلغ</th><th>استفاده</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+          <tbody>${state.discounts.map(d => `
+            <tr>
+              <td style="font-family:monospace;font-weight:600;">${escapeHtml(d.code)}</td>
+              <td>${d.percent ? d.percent + '%' : '-'}</td>
+              <td>${d.amount ? formatPrice(d.amount) : '-'}</td>
+              <td>${d.usage || 0} / ${d.maxUsage || 100}</td>
+              <td>${d.active ? statusBadge('PUBLISHED') : statusBadge('CANCELLED')}</td>
+              <td>
+                <button class="btn-icon" style="background:rgba(239,68,68,0.1);color:#ef4444;width:32px;height:32px;" onclick="deleteDiscount('${d.id}')"><i class="fas fa-trash"></i></button>
+              </td>
+            </tr>
+          `).join('')}</tbody>
+        </table></div></div>`
+    }
+    <div class="modal-overlay" id="discountModal">
+      <div class="modal">
+        <div class="modal-header">
+          <h2 class="modal-title">افزودن کد تخفیف</h2>
+          <button class="modal-close" onclick="closeDiscountForm()"><i class="fas fa-times"></i></button>
+        </div>
+        <form onsubmit="saveDiscount(event)">
+          <div class="form-group"><label class="form-label">کد تخفیف *</label><input class="form-input" id="dCode" placeholder="SUMMER20" required style="text-transform:uppercase;"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="form-group"><label class="form-label">درصد</label><input type="number" class="form-input" id="dPercent" placeholder="20" min="0" max="100"></div>
+            <div class="form-group"><label class="form-label">یا مبلغ ثابت</label><input type="number" class="form-input" id="dAmount" placeholder="10000"></div>
+          </div>
+          <div class="form-group"><label class="form-label">حداکثر استفاده</label><input type="number" class="form-input" id="dMax" value="100"></div>
+          <div style="display:flex;gap:12px;margin-top:20px;">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> ذخیره</button>
+            <button type="button" class="btn btn-outline" onclick="closeDiscountForm()">انصراف</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+}
+
+function openDiscountForm() {
+  document.getElementById('discountModal').classList.add('active');
+  document.getElementById('dCode').value = '';
+  document.getElementById('dPercent').value = '';
+  document.getElementById('dAmount').value = '';
+  document.getElementById('dMax').value = '100';
+}
+function closeDiscountForm() { document.getElementById('discountModal').classList.remove('active'); }
+
+async function saveDiscount(e) {
+  e.preventDefault();
+  const code = document.getElementById('dCode').value.trim().toUpperCase();
+  const percent = +document.getElementById('dPercent').value || null;
+  const amount = +document.getElementById('dAmount').value || null;
+  const maxUsage = +document.getElementById('dMax').value || 100;
+  if (!code) return;
+  if (!percent && !amount) return toast('درصد یا مبلغ را وارد کنید', 'error');
+  state.discounts.push({ id: 'd_' + Date.now(), code, percent, amount, maxUsage, usage: 0, active: true });
+  await save('discounts');
+  toast('کد تخفیف اضافه شد');
+  closeDiscountForm();
+  adminPage('discounts');
+}
+
+async function deleteDiscount(id) {
+  if (!confirm('حذف این کد؟')) return;
+  state.discounts = state.discounts.filter(d => d.id !== id);
+  await save('discounts');
+  toast('کد حذف شد');
+  adminPage('discounts');
+}
+
+/* ============================================
+   ادمین - نظرات
+   ============================================ */
+function renderAdminReviews() {
+  return `
+    <h1 style="font-size:20px;margin-bottom:20px;">مدیریت نظرات</h1>
+    ${state.reviews.length === 0
+      ? `<div class="admin-card"><div style="padding:60px 20px;text-align:center;color:var(--text-dim);">
+          <i class="fas fa-comments" style="font-size:48px;opacity:0.15;display:block;margin-bottom:12px;"></i>
+          <h3 style="color:white;font-size:18px;margin-bottom:8px;">هنوز نظری ثبت نشده</h3>
+          <p style="font-size:14px;">نظرات کاربران پس از ثبت در اینجا نمایش داده می‌شوند</p>
+        </div></div>`
+      : `<div style="display:flex;flex-direction:column;gap:12px;">
+          ${state.reviews.map(r => {
+            const movie = getMovie(r.movieId);
+            return `
+              <div class="admin-card" style="padding:20px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                  <div>
+                    <span style="font-weight:600;">${escapeHtml(r.user || 'کاربر')}</span>
+                    <span style="color:var(--text-dim);font-size:12px;margin-right:12px;">درباره</span>
+                    <span style="font-weight:600;">${escapeHtml(movie?.title || '-')}</span>
+                  </div>
+                  <div>${statusBadge(r.status)}</div>
+                </div>
+                <div style="color:var(--gold);font-size:12px;margin-bottom:8px;">
+                  ${Array.from({length:5}, (_,i) => `<i class="fas fa-star" style="${i < r.rating ? '' : 'opacity:0.2'}"></i>`).join('')}
+                </div>
+                <p style="color:var(--text-dim);font-size:14px;margin-bottom:12px;">${escapeHtml(r.comment)}</p>
+                <div style="display:flex;gap:8px;">
+                  ${r.status === 'PENDING' ? `
+                    <button class="btn btn-primary btn-sm" onclick="approveReview('${r.id}')"><i class="fas fa-check"></i> تایید</button>
+                    <button class="btn btn-outline btn-sm" onclick="rejectReview('${r.id}')"><i class="fas fa-times"></i> رد</button>
+                  ` : ''}
+                  <button class="btn btn-outline btn-sm" style="color:#ef4444;border-color:rgba(239,68,68,0.3);" onclick="deleteReview('${r.id}')"><i class="fas fa-trash"></i> حذف</button>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>`
+    }
+  `;
+}
+
+async function approveReview(id) {
+  const r = state.reviews.find(x => x.id === id);
+  if (r) r.status = 'APPROVED';
+  await save('reviews');
+  toast('نظر تایید شد');
+  adminPage('reviews');
+}
+
+async function rejectReview(id) {
+  const r = state.reviews.find(x => x.id === id);
+  if (r) r.status = 'REJECTED';
+  await save('reviews');
+  toast('نظر رد شد');
+  adminPage('reviews');
+}
+
+async function deleteReview(id) {
+  if (!confirm('حذف این نظر؟')) return;
+  state.reviews = state.reviews.filter(r => r.id !== id);
+  await save('reviews');
+  toast('نظر حذف شد');
+  adminPage('reviews');
+}
+
+/* ============================================
+   ادمین - تنظیمات
+   ============================================ */
+function renderAdminSettings() {
+  const s = state.settings;
+  return `
+    <h1 style="font-size:20px;margin-bottom:20px;">تنظیمات سایت</h1>
+    <div class="admin-card">
+      <div style="padding:24px;max-width:600px;">
+        <div class="form-group"><label class="form-label">نام سایت</label><input class="form-input" id="setName" value="${escapeHtml(s.siteName || 'سینه‌شاپ')}"></div>
+        <div class="form-group"><label class="form-label">رنگ اصلی</label><input type="color" class="form-input" id="setColor" value="${s.primaryColor || '#e50914'}" style="height:50px;"></div>
+        <div class="form-group"><label class="form-label">عنوان SEO</label><input class="form-input" id="setSeoTitle" value="${escapeHtml(s.seoTitle || 'سینه‌شاپ | فروشگاه فیلم')}"></div>
+        <div class="form-group"><label class="form-label">توضیحات SEO</label><textarea class="form-textarea" id="setSeoDesc">${escapeHtml(s.seoDescription || 'خرید و دانلود جدیدترین فیلم‌های جهان')}</textarea></div>
+        <button class="btn btn-primary" onclick="saveSettings()"><i class="fas fa-save"></i> ذخیره تنظیمات</button>
+      </div>
+    </div>
+  `;
+}
+
+async function saveSettings() {
+  state.settings = {
+    siteName: document.getElementById('setName').value,
+    primaryColor: document.getElementById('setColor').value,
+    seoTitle: document.getElementById('setSeoTitle').value,
+    seoDescription: document.getElementById('setSeoDesc').value,
+  };
+  await save('settings');
+  toast('تنظیمات ذخیره شد');
+}
+
+/* ============================================
+   Init + Shortcut Space+S
+   ============================================ */
+let spacePressed = false;
+
+document.addEventListener('keydown', (e) => {
+  const isInInput = ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName);
+
+  if (e.code === 'Space' && !isInInput) {
+    e.preventDefault();
+    spacePressed = true;
+    const hint = document.getElementById('secretHint');
+    hint.classList.add('show');
+    setTimeout(() => hint.classList.remove('show'), 2000);
+    setTimeout(() => { spacePressed = false; }, 1500);
+    return;
+  }
+
+  if (spacePressed && (e.key === 's' || e.key === 'S') && !isInInput) {
+    e.preventDefault();
+    spacePressed = false;
+    document.getElementById('secretHint').classList.remove('show');
+    openAdmin();
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (document.getElementById('adminApp').classList.contains('active')) closeAdmin();
+  }
+});
+
+// به‌روزرسانی خودکار هر 10 ثانیه (برای دیدن تغییرات دیگران)
+setInterval(async () => {
+  if (document.getElementById('adminApp').classList.contains('active')) return;
+  if (document.querySelector('.modal-overlay.active')) return;
+  await loadAll();
+  if (state.page === 'home' || state.page === 'movies' || state.page === 'genres') {
+    showPage(state.page);
+  }
+}, 10000);
+
+// Init
+async function init() {
+  updateCartCount();
+  const ok = await loadAll();
+  document.getElementById('loadingOverlay').classList.add('hidden');
+  showPage('home');
+  if (ok) toast('اتصال به سرور برقرار شد');
+}
+init();
+</script>
+</body>
+</html>
